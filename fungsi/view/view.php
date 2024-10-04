@@ -231,7 +231,7 @@ class view
         $sql = 'SELECT produk.*, kategori.nama_kategori,kategori.kode_kategori 
                 FROM produk 
                 INNER JOIN kategori ON produk.id_kategori = kategori.id_kategori';
-        $row = $this->db->prepare($sql);
+       $row = $this->db->prepare($sql);
         $row->execute();
         $hasil = $row->fetchAll();
         return $hasil;

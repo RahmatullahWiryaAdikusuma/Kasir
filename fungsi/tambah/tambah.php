@@ -52,6 +52,55 @@ if(!empty($_SESSION['admin'])){
 	    exit;
 	}
 
+	if (isset($_GET['produk']) && $_GET['produk'] == 'getLastKodeProduk' && isset($_GET['id_kategori'])) {
+	    $id_kategori = $_GET['id_kategori'];
+	    $sql = "SELECT kode_produk FROM produk WHERE id_kategori = ? ORDER BY kode_produk DESC LIMIT 1";
+	    $stmt = $config->prepare($sql);
+	    $stmt->execute([$id_kategori]);
+	    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	    echo $result ? $result['kode_produk'] : '00'; // Jika tidak ditemukan, kembalikan nilai '00'
+	    exit(); // Hentikan eksekusi script setelah menampilkan output
+	}
+
+	if (!empty($_GET['produk']) && $_GET['produk'] == 'tambah') {
+	    $id_kategori = $_POST['id_kategori'];
+	    $nama_produk = $_POST['nama_produk'];
+	    $kode_kategori = $_POST['kode_kategori'];
+
+	    // Generate new product code
+	    $sql = "SELECT kode_produk FROM produk WHERE id_kategori = ? ORDER BY kode_produk DESC LIMIT 1";
+	    $stmt = $config->prepare($sql);
+	    $stmt->execute([$id_kategori]);
+	    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	    if ($result) {
+	        $lastKodeProduk = (int)substr($result['kode_produk'], -2);
+	        $nextKodeProduk = str_pad($lastKodeProduk + 1, 2, '0', STR_PAD_LEFT);
+	    } else {
+	        $nextKodeProduk = '01';
+	    }
+
+	    $kode_produk = $kode_kategori . $nextKodeProduk;
+
+	    // Debugging
+	    echo "id_kategori: $id_kategori<br>";
+	    echo "nama_produk: $nama_produk<br>";
+	    echo "kode_kategori: $kode_kategori<br>";
+	    echo "kode_produk: $kode_produk<br>";
+
+	    if (!empty($id_kategori) && !empty($nama_produk) && !empty($kode_kategori) && !empty($kode_produk)) {
+	        $sql = 'INSERT INTO produk (id_kategori, nama_produk, kode_kategori, kode_produk) VALUES (?, ?, ?, ?)';
+	        $row = $config->prepare($sql);
+	        $row->execute([$id_kategori, $nama_produk, $kode_kategori, $kode_produk]);
+
+	        echo '<script>window.location="../../index.php?page=produk&&success=tambah-data"</script>';
+	    } else {
+	        echo "Data tidak lengkap.";
+	    }
+	}
+
+	// Logika untuk tabel barang tetap ada di sini
 	if (!empty($_GET['barang']) && $_GET['barang'] == 'tambah') {
 	    $id_kategori = $_POST['id_kategori'];
 	    $id_produk = $_POST['id_produk'];
@@ -98,18 +147,7 @@ if(!empty($_SESSION['admin'])){
 	    }
 	}
 
- 	if(!empty($_GET['produk'])){
-		$id_kategori = $_POST['id_kategori']; // Pastikan ini dideklarasikan
-		$kode_produk = $_POST['kode_produk']; // Pastikan ini dideklarasikan
-		$nama_produk = $_POST['nama_produk']; // Pastikan ini dideklarasikan
-		$kode_kategori = $_POST['kode_kategori']; // Pastikan ini dideklarasikan	
-		$sql = "INSERT INTO produk (id_kategori,kode_produk,nama_produk,kode_kategori) 
-			    VALUES ('$id_kategori','$kode_produk','$nama_produk','$kode_kategori') ";
-		$row = $config -> prepare($sql);
-		$row -> execute();
-		echo '<script>window.location="../../index.php?page=produk&success=tambah-data"</script>';
-	}
-
+ 	
 	if(!empty($_GET['member'])){
 		$nama = $_POST['nama'];
 		$alamat = $_POST['alamat'];
@@ -179,73 +217,8 @@ if(!empty($_SESSION['pegawai'])){
     }
 
 	require '../../config.php';
-
-	if (isset($_GET['id_produk'])) {
-	    $id_produk = $_GET['id_produk'];
-	    $sql = "SELECT kode_produk FROM produk WHERE id_produk = ?";
-	    $stmt = $config->prepare($sql);
-	    $stmt->execute([$id_produk]);
-	    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-	    if ($result) {
-	        echo $result['kode_produk'];
-	    } else {
-	        echo ''; // Jika tidak ditemukan, kembalikan nilai kosong
-	    }
-	}
 	
-	if (isset($_GET['produk']) && $_GET['produk'] == 'checkNamaProduk') {
-	    $nama_produk = $_GET['nama_produk'];
-	    $sql = "SELECT COUNT(*) FROM produk WHERE nama_produk = ?";
-	    $stmt = $config->prepare($sql);
-	    $stmt->execute([$nama_produk]);
-	    $count = $stmt->fetchColumn();
-
-	    if ($count > 0) {
-	        echo 'exists';
-	    } else {
-	        echo 'not exists';
-	    }
-	    exit;
-	}
-
-	if (isset($_GET['produk']) && $_GET['produk'] == 'getLastKodeProduk') {
-	    $id_kategori = $_GET['id_kategori'];
-	    $sql = "SELECT kode_produk FROM produk WHERE id_kategori = ? ORDER BY kode_produk DESC LIMIT 1";
-	    $stmt = $config->prepare($sql);
-	    $stmt->execute([$id_kategori]);
-	    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-	    if ($result) {
-	        echo $result['kode_produk'];
-	    } else {
-	        echo ''; // Jika tidak ditemukan, kembalikan nilai kosong
-	    }
-	    exit;
-	}
-
-	if (!empty($_GET['produk']) && $_GET['produk'] == 'tambah') {
-	    $id_kategori = $_POST['id_kategori'];
-	    $nama_produk = $_POST['nama_produk'];
-	    $kode_kategori = $_POST['kode_kategori'];
-	    $kode_produk = $_POST['kode_produk'];
-
-	    // Debugging
-	    echo "id_kategori: $id_kategori<br>";
-	    echo "nama_produk: $nama_produk<br>";
-	    echo "kode_kategori: $kode_kategori<br>";
-	    echo "kode_produk: $kode_produk<br>";
-
-	    if (!empty($id_kategori) && !empty($nama_produk) && !empty($kode_kategori) && !empty($kode_produk)) {
-	        $sql = 'INSERT INTO produk (id_kategori, nama_produk, kode_kategori, kode_produk) VALUES (?, ?, ?, ?)';
-	        $row = $config->prepare($sql);
-	        $row->execute([$id_kategori, $nama_produk, $kode_kategori, $kode_produk]);
-
-	        echo '<script>window.location="../../index.php?page=produk&&success=tambah-data"</script>';
-	    } else {
-	        echo "Data tidak lengkap.";
-	    }
-	}
+	
 
 	if (isset($_GET['barang']) && $_GET['barang'] == 'getKode') {
 	    $id_produk = $_GET['id_produk'];
