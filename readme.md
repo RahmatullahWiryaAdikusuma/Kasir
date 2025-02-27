@@ -3,10 +3,16 @@
 setting koneksi di config.php dan ganti username, password dan dbname nya
 
 ## Penggunaan Login
+superadmin
 Username : admin
 <br/>
-Password : 123
+Password : admin
 <br>
-<span style="color:red">* Penggunaan Login untuk <b>single User</b> </span>
+pemilik toko
+Username : herlina
+<br/>
+Password : admin
+<br>
+
 
 
