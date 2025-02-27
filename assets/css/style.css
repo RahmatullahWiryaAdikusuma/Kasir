@@ -10,7 +10,7 @@ Premium: http://www.gridgum.com
 
 /* BASIC THEME CONFIGURATION */
 body {
-    color: #797979;
+    color: #160707;
 	background: #f2f2f2;
     font-family: 'Ruda', sans-serif;
     padding: 0px !important;
@@ -229,14 +229,14 @@ ul.top-menu > li > .logout {
 /*sidebar navigation*/
 
 #sidebar {
-    width: 210px;
+    width: 210px; 
     height: 100%;
     position: fixed;
-    background: #424a5d;
 }
 
+
 #sidebar h5 {
-	color: #f2f2f2;
+	color: #ffffff;
 	font-weight: 700;
 }
 
@@ -246,6 +246,7 @@ ul.top-menu > li > .logout {
 
 #sidebar .sub-menu > .sub li  {
     padding-left: 32px;
+
 }
 
 #sidebar .sub-menu > .sub li:last-child {
@@ -295,7 +296,7 @@ ul.sidebar-menu {
 }
 
 ul.sidebar-menu li ul.sub li{
-    background: #424a5d;
+    background: #434343;
     margin-bottom: 0;
     margin-left: 0;
     margin-right: 0;
@@ -316,7 +317,7 @@ ul.sidebar-menu li ul.sub li a {
     -o-transition: all 0.3s ease;
     -ms-transition: all 0.3s ease;
     transition: all 0.3s ease;
-    color: #aeb2b7;
+    color: #ffffff;
 }
 
 ul.sidebar-menu li ul.sub li a:hover {
@@ -350,7 +351,7 @@ ul.sidebar-menu li a span{
 }
 
 ul.sidebar-menu li a{
-    color: #aeb2b7;
+    color: #ffffff;
     text-decoration: none;
     display: block;
     padding: 15px 0 15px 10px;
@@ -1936,7 +1937,7 @@ label {
 	margin: 0;
 	padding: 25px 20px;
 	text-align: center;
-	background: #42929e;
+	background: #ff0000;
 	border-radius: 5px 5px 0 0;
 	-webkit-border-radius: 5px 5px 0 0;
 	color: #fff;
@@ -2154,6 +2155,44 @@ label {
     font-size: 16px;
 }
 
+.panel-primary {
+    background-color: #ffffff; /* Ganti dengan warna yang diinginkan */
+    border-color: #434343;
+}
+
+.panel-success {
+    background-color: #ffffff; /* Ganti dengan warna yang diinginkan */
+    border-color: #28a745;
+}
+
+.panel-info {
+    background-color: #ffffff; /* Ganti dengan warna yang diinginkan */
+   
+    border-color: #17a2b8;
+}
+
+.panel-warning {
+    background-color: #ffffff; /* Ganti dengan warna yang diinginkan */
+    border-color: #ffc107;
+}
+.panel-primary .panel-heading {
+    background-color: #434343; /* Ganti dengan warna yang diinginkan */
+}
+
+.panel-success .panel-heading {
+    background-color: #28a745; /* Ganti dengan warna yang diinginkan */
+    color: #ffffff;
+}
+
+.panel-info .panel-heading {
+    background-color: #17a2b8; /* Ganti dengan warna yang diinginkan */
+    color: #ffffff;
+}
+
+.panel-warning .panel-heading {
+    background-color: #ffc107; /* Ganti dengan warna yang diinginkan */
+    color: #ffffff;
+}
 
 /*flot chart*/
 .flot-chart .chart, .flot-chart .pie, .flot-chart .bars {
@@ -2216,10 +2255,11 @@ label {
 
 /*footer*/
 .site-footer {
-    background: #285c64;
-    color: #fff;
-    padding: 12px 0;
-    font-size:12pt;
+    position: static;
+        background: #F90000;
+        color: #fff;
+        padding: 12px 0;
+        font-size:12pt;
 }
 
 

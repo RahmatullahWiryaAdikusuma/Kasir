@@ -33,5 +33,12 @@ error_reporting(0);
 	}
 	
 	$view = 'fungsi/view/view.php'; // direktori fungsi select data
+  function isSuperuser() {
+    if (!isset($_SESSION['user'])) {
+        return false;
+    }
+    return $_SESSION['user']['role'] === 'Superuser'; // atau sesuaikan dengan role superuser di sistem Anda
+}
 ?>
+
 

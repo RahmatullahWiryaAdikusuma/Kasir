@@ -1,6 +1,6 @@
 <?php 
 session_start();
-if(!empty($_SESSION['admin'])){
+if(!empty($_SESSION['Admin'])){
 	require '../../config.php';
 	if(!empty($_GET['pengaturan'])){
 		$nama= htmlentities($_POST['namatoko']);
@@ -52,36 +52,80 @@ if(!empty($_SESSION['admin'])){
 
 
 	if ($_GET['barang'] == 'edit') {
+		try {
+			$id_barang = htmlspecialchars($_POST['id_barang']);
+			$id_kategori = htmlspecialchars($_POST['id_kategori']);
+			$id_produk = htmlspecialchars($_POST['id_produk']);
+			$id_satuan = htmlspecialchars($_POST['id_satuan']);
+			$kode_barang = htmlspecialchars($_POST['kode_barang']);
+			$nama_barang = htmlspecialchars($_POST['nama_barang']);
+			$jual = htmlspecialchars($_POST['harga_jual']);
+			$stok = htmlspecialchars($_POST['stok']);
+			$tgl_update = date("Y-m-d");
+
+			// Debug
+			error_log("Updating barang with ID: " . $id_barang);
+			error_log("POST Data: " . print_r($_POST, true));
+			
+			// Update data barang
+			$sql = "UPDATE barang SET 
+					id_kategori = ?,
+					id_produk = ?,
+					id_satuan = ?,
+					kode_barang = ?,
+					nama_barang = ?,
+					harga_jual = ?,
+					stok = ?,
+					tgl_update = ?
+					WHERE id_barang = ?";
+					
+			$stmt = $config->prepare($sql);
+			$result = $stmt->execute([
+				$id_kategori,
+				$id_produk,
+				$id_satuan,
+				$kode_barang,
+				$nama_barang,
+				$jual,
+				$stok,
+				$tgl_update,
+				$id_barang
+			]);
+
+			if ($result) {
+				echo '<script>
+					alert("Edit Data Berhasil"); 
+					window.location="../../index.php?page=barang";
+				</script>';
+			} else {
+				throw new Exception("Gagal mengupdate data barang");
+			}
+		} catch (PDOException $e) {
+			error_log("Database Error: " . $e->getMessage());
+			echo '<script>
+				alert("Error: ' . $e->getMessage() . '");
+				window.location="../../index.php?page=barang";
+			</script>';
+		} catch (Exception $e) {
+			error_log("General Error: " . $e->getMessage());
+			echo '<script>
+				alert("Error: ' . $e->getMessage() . '");
+				window.location="../../index.php?page=barang";
+			</script>';
+		}
+	}
+
+	if ($_GET['produk'] == 'edit') {
 		require '../../config.php'; // Load konfigurasi database
 	
-		// Jika permintaan adalah untuk mendapatkan kode_produk berdasarkan id_produk
-		if ($_GET['barang'] == 'getKode' && isset($_GET['id_produk'])) {
-			$id_kategori = $_GET['id_kategori'];
-			$id_produk = $_GET['id_produk'];
-			$sql = "SELECT kode_produk FROM produk WHERE id_produk = ?";
-			$stmt = $config->prepare($sql);
-			$stmt->execute([$id_produk]);
-			$result = $stmt->fetch(PDO::FETCH_ASSOC);
-	
-			if ($result) {
-				echo $result['kode_produk'];
-			} else {
-				echo ''; // Jika tidak ditemukan, kembalikan nilai kosong
-			}
-			exit(); // Hentikan eksekusi script setelah menampilkan output
-		}
-	
 		// Proses penyimpanan data
-		if ($_GET['barang'] == 'edit') {
+		if ($_GET['produk'] == 'edit') {
 			// Ambil data dari form
-			$id_kategori = $_POST['id_kategori'];
-			$id_produk = $_POST['id_produk']; // Ambil id_produk dari form
-			$nama_barang = $_POST['nama_barang'];
-			$tipe = $_POST['tipe'];
-			$jual = $_POST['harga_jual'];
-			$stok = $_POST['stok'];
-			$tgl_input = date("Y-m-d H:i:s");
-			$tgl_update = date("Y-m-d H:i:s");
+			$id_produk = $_POST['id']; // Use 'id' as per the form
+			$nama_produk = $_POST['nama'];
+			$kode_produk = $_POST['kode'];
+			$kategori = $_POST['kategori'];
+			
 
 			// Debugging: Tampilkan data yang diterima dari form
 			echo "<pre>";
@@ -94,32 +138,20 @@ if(!empty($_SESSION['admin'])){
 			}
 
 			try {
-				// Ambil kode_produk berdasarkan id_produk
-				$sql_fetch_kode = "SELECT kode_produk FROM produk WHERE id_produk = ?";
-				$stmt_fetch_kode = $config->prepare($sql_fetch_kode);
-				$stmt_fetch_kode->execute([$id_produk]);
-				$result_fetch_kode = $stmt_fetch_kode->fetch(PDO::FETCH_ASSOC);
-
-				if (!$result_fetch_kode) {
-					die("Error: id_produk tidak ditemukan di tabel produk.");
-				}
-
-				$kode_produk = $result_fetch_kode['kode_produk'];
-
 				// Mulai transaksi
 				$config->beginTransaction();
 
-				// Update data ke tabel barang
-				$sql_barang = 'UPDATE barang SET id_kategori=?, id_produk=?, nama_barang=?, tipe=?, harga_jual=?, stok=?, tgl_input=?, tgl_update=? WHERE id_barang=?';
-				$data_barang = [$id_kategori, $id_produk, $nama_barang, $tipe, $jual, $stok, $tgl_input, $tgl_update, $id_produk]; // Pastikan id_barang diisi dengan benar
-				$row_barang = $config->prepare($sql_barang);
-				$row_barang->execute($data_barang);
+				// Update data ke tabel produk
+				$sql_produk = 'UPDATE produk SET nama_produk=?, kode_produk=?, id_kategori=? WHERE id_produk=?';
+				$data_produk = [$nama_produk, $kode_produk, $kategori, $id_produk];
+				$row_produk = $config->prepare($sql_produk);
+				$row_produk->execute($data_produk);
 
 				// Commit transaksi
 				$config->commit();
 
-				echo "Data barang berhasil disimpan.<br>";
-				echo '<script>window.location="../../index.php?page=barang&success=tambah-data"</script>';
+				echo "Data produk berhasil disimpan.<br>";
+				echo '<script>window.location="../../index.php?page=produk&success=edit-data"</script>';
 			} catch (Exception $e) {
 				// Rollback jika terjadi kesalahan
 				$config->rollBack();
@@ -127,7 +159,6 @@ if(!empty($_SESSION['admin'])){
 			}
 		}
 	}
-
 
 	if(!empty($_GET['gambar'])){
 		$id = htmlentities($_POST['id']);
@@ -165,7 +196,7 @@ if(!empty($_SESSION['admin'])){
 				$id = $_POST['id'];
 				$data[] = $_FILES['foto']['name'];
 				$data[] = $id;
-				$sql = 'UPDATE member SET gambar=?  WHERE member.id_member=?';
+				$sql = 'UPDATE user SET gambar=?  WHERE user.id_user=? where role = "Admin"';
 				$row = $config -> prepare($sql);
 				$row -> execute($data);
 				echo '<script>window.location="../../index.php?page=user&success=edit-data"</script>';
@@ -173,61 +204,72 @@ if(!empty($_SESSION['admin'])){
 		}
 	}
 
-	if(!empty($_GET['member'])){
+	if(!empty($_GET['Member'])){
 		$id = htmlentities($_POST['id']);
 		$nama = htmlentities($_POST['nama']);
+		$username = htmlentities($_POST['username']);
+		$password = htmlentities($_POST['password']);
 		$alamat = htmlentities($_POST['alamat']);
-		$tlp = htmlentities($_POST['telepon']);
+		$tlp = htmlentities($_POST['no_telp']);
 		$email = htmlentities($_POST['email']);
-		$nik = htmlentities($_POST['nik']);
 		
-		$data[] = $nama;
-		$data[] = $alamat;
-		$data[] = $tlp;
-		$data[] = $email;
-		$data[] = $nik;
-		$data[] = $id;
-		$sql = 'UPDATE member SET nm_member=?,alamat_member=?,telepon=?,email=?,NIK=? WHERE id_member=?';
-		$row = $config -> prepare($sql);
-		$row -> execute($data);
-		echo '<script>window.location="../../index.php?page=member&success=edit-data"</script>';
+		try {
+			// Update data user
+			if(!empty($password)) {
+				// Jika password diisi, update password juga
+				$enc_password = md5($password);
+				$sql = 'UPDATE user SET nama=?, alamat=?, no_telp=?, email=?, password=? WHERE id_user=?';
+				$row = $config->prepare($sql);
+				$row->execute([$nama, $alamat, $tlp, $email, $enc_password, $id]);
+			} else {
+				// Jika password kosong, update tanpa password
+				$sql = 'UPDATE user SET nama=?, alamat=?, no_telp=?, email=? WHERE id_user=?';
+				$row = $config->prepare($sql);
+				$row->execute([$nama, $alamat, $tlp, $email, $id]);
+			}
+			
+			echo '<script>alert("Data berhasil diupdate!");
+				  window.location="../../index.php?page=pegawai"</script>';
+		} catch(PDOException $e) {
+			echo '<script>alert("Gagal mengupdate data: ' . $e->getMessage() . '");
+				  window.location="../../index.php?page=pegawai"</script>';
+		}
 	}
 
 	if(!empty($_GET['akun'])){
-		$user = htmlentities($_POST['user']);
-		$pass = htmlentities($_POST['pass']);
+		$username = htmlentities($_POST['username']);
+		$password = htmlentities($_POST['password']);
 		$id = htmlentities($_POST['id']);
-		$enc_pwd = md5($pass);
+		$enc_pwd = md5($password);
 		
-		$data[] = $user;
+		$data[] = $username;
 		$data[] = $enc_pwd;
-		$sql = 'UPDATE login SET user=?,pass=?,id_member=? WHERE id_login=?';
+		$sql = 'UPDATE login SET username=?,password=?,id_user=?';
 		$row = $config -> prepare($sql);
 		$row -> execute($data);
-		echo '<script>window.location="../../index.php?page=member&success=edit-data"</script>';
+		echo '<script>window.location="../../index.php?page=pegawai&success=edit-data"</script>';
 	}
 
 	if(!empty($_GET['profil'])){
 		$id = htmlentities($_POST['id']);
 		$nama = htmlentities($_POST['nama']);
 		$alamat = htmlentities($_POST['alamat']);
-		$tlp = htmlentities($_POST['tlp']);
+		$tlp = htmlentities($_POST['no_telp']);
 		$email = htmlentities($_POST['email']);
-		$nik = htmlentities($_POST['nik']);
-		
+
 		$data[] = $nama;
 		$data[] = $alamat;
 		$data[] = $tlp;
 		$data[] = $email;
-		$data[] = $nik;
 		$data[] = $id;
-		$sql = 'UPDATE member SET nm_member=?,alamat_member=?,telepon=?,email=?,NIK=? WHERE id_member=?';
+		$sql = 'UPDATE user SET nama=?,alamat=?,no_telp=?,email=? WHERE id_user=?';
 		$row = $config -> prepare($sql);
 		$row -> execute($data);
 		echo '<script>window.location="../../index.php?page=user&success=edit-data"</script>';
 	}
 }
-if(!empty($_SESSION['pegawai'])){
+
+if(!empty($_SESSION['Member'])){
 	require '../../config.php';
 	if(!empty($_GET['jual'])){
 		$id = htmlentities($_POST['id']);
@@ -248,5 +290,52 @@ if(!empty($_SESSION['pegawai'])){
 			$row1 = $config -> prepare($sql1);
 			$row1 -> execute($data1);
 			echo '<script>window.location="../../index.php?page=jual#keranjang"</script>';
+	}
+
+	if(!empty($_GET['Superuser'])){
+		$id = htmlentities($_POST['id']);
+		$username = htmlentities($_POST['username']);
+		$nama = htmlentities($_POST['nama']);
+		$role = htmlentities($_POST['role']);
+		
+		$data[] = $username;
+		$data[] = $nama;
+		$data[] = $role;
+		$data[] = $id;
+		$sql = 'UPDATE user SET username=?,nama=?,role=? WHERE id_user=?';
+		$row = $config -> prepare($sql);
+		$row -> execute($data);
+		echo '<script>window.location="../../index.php?page=superuser&success=edit-data"</script>';
+	}
+	
+	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+		$id_user = $_POST['id_user'];
+		$username = $_POST['username'];
+		$nama = $_POST['nama'];
+		$role = $_POST['role'];
+	
+		$sql = "UPDATE user SET username = ?, nama = ?, role = ? WHERE id_user = ?";
+		$row = $config->prepare($sql);
+		$row->execute([$username, $nama, $role, $id_user]);
+	
+		// Redirect kembali ke halaman dashboard
+		header("Location: ../../superuser_dashboard.php");
+		exit;
+	}
+}
+
+if(!empty($_GET['satuan'])){
+	$id = $_POST['id_satuan'];
+	$satuan = htmlspecialchars($_POST['satuan']);
+	
+	try {
+		$sql = 'UPDATE satuan SET satuan=? WHERE id_satuan=?';
+		$row = $config->prepare($sql);
+		$row->execute(array($satuan, $id));
+		
+		echo '<script>window.location="../../index.php?page=satuan&success-edit=edit-data"</script>';
+	} catch(PDOException $e) {
+		echo '<script>alert("Gagal mengupdate data: ' . $e->getMessage() . '");
+			  window.location="../../index.php?page=satuan"</script>';
 	}
 }

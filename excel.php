@@ -48,8 +48,10 @@
         <table border="1" width="100%" cellpadding="3" cellspacing="4">
             <thead>
                 <tr bgcolor="yellow">
+                    <th> Kode Nota</th>
                     <th> No</th>
-                    <th> ID Barang</th>
+                    <th> Kode Barang</th>
+                    <th> Nama Produk</th>
                     <th> Nama Barang</th>
                     <th style="width:10%;"> Jumlah</th>
                     <th style="width:10%;"> Total</th>
@@ -86,8 +88,10 @@
                         $jumlah += $isi['jumlah'];
                 ?>
                 <tr>
+                    <td><?php echo $isi['kode_nota'];?></td>
                     <td><?php echo $no;?></td>
-                    <td><?php echo $isi['id_barang'];?></td>
+                    <td><?php echo $isi['kode_barang'];?></td>
+                    <td><?php echo $isi['nama_produk'];?></td>
                     <td><?php echo $isi['nama_barang'];?></td>
                     <td><?php echo $isi['jumlah'];?> </td>
                     <td>Rp.<?php echo number_format($isi['total']);?>,-</td>

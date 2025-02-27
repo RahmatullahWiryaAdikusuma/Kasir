@@ -1,6 +1,5 @@
 <?php 
 /*
-  | Source Code Aplikasi Penjualan Barang Kasir dengan PHP & MYSQL
   | 
   | @package   : pos-kasir-php
   | @file	   : index.php 
@@ -16,39 +15,55 @@
 	@ob_start();
 	session_start();
 
-	if(!empty($_SESSION['admin'])){
+	if(!empty($_SESSION['Admin']) && $_SESSION['role'] == 'Superuser'){
+		// Redirect ke dashboard superuser
+		echo '<script>window.location="admin/superuser_dashboard.php";</script>';
+	}
+	else if(!empty($_SESSION['Admin']) && $_SESSION['role'] == 'Admin'){
 		require 'config.php';
 		include $view;
 		$lihat = new view($config);
 		$toko = $lihat -> toko();
-		//  admin
-			include 'admin/template/header.php';
-			include 'admin/template/sidebar.php';
-				if(!empty($_GET['page'])){
-					include 'admin/module/'.$_GET['page'].'/index.php';
-				}else{
-					include 'admin/template/home.php';
-				}
-			include 'admin/module/loginPegawai.php';
-			include 'admin/template/footer.php';
-		// end admin
+		// admin view
+		include 'template/header.php';
+		include 'template/sidebar.php';
+		if(!empty($_GET['page'])){
+			$page = $_GET['page'];
+			if($page == 'satuan'){
+				include 'View/admin/satuan/index.php';
+			} else if($page == 'satuan/edit'){
+				include 'View/admin/satuan/edit/index.php';
+			} else {
+				include 'View/admin/'.$_GET['page'].'/index.php';
+			}
+		}else{
+			include 'template/home.php';
+		}
+		include 'View/module/index.php';
+		include 'template/footer.php';
 	} 
-	else  if (!empty($_SESSION['pegawai'])){
+
+	else if (!empty($_SESSION['Member']) && $_SESSION['role'] == 'Member'){
 		require 'config.php';
 		include $view;
 		$lihat = new view($config);
 		$toko = $lihat -> toko();
-		//  admin
-			include 'admin/template/header-pegawai.php';
-			include 'admin/template/sidebar-pegawai.php';
-				
-					include 'admin/module/jual/index.php';
-				
-			include 'admin/template/footer.php';
-		// end admin
-	} 
+		
+		// Ambil data profil Member yang sedang login
+		$id_member = $_SESSION['Member']['id_user'];
+		$sql_profil = "SELECT * FROM user WHERE id_user = ? AND role = 'Member'";
+		$row = $config->prepare($sql_profil);
+		$row->execute([$id_member]);
+		$hasil_profil = $row->fetch();
+		
+		// member/pegawai view
+		include 'template/header.php';
+		include 'template/sidebar_pegawai.php';
+		include 'View/member/jual/index.php';
+		include 'template/footer.php';
+	}
 	
-	else{
+	else {
 		echo '<script>window.location="login.php";</script>';
 	}
 ?>
