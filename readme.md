@@ -36,7 +36,9 @@ cd Kasir
 # Sesuaikan koneksi database di file config.php
 
 
+```
 
+## 🚀 Instalasi Lokal
 | Peran        | Username | Password |
 | ------------ | -------- | -------- |
 | Super Admin  | admin    | admin    |
