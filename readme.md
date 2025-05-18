@@ -37,17 +37,9 @@ cd Kasir
 
 
 
-## Penggunaan Login
-superadmin
-Username : admin
-<br/>
-Password : admin
-<br>
-pemilik toko
-Username : herlina
-<br/>
-Password : admin
-<br>
-
+| Peran        | Username | Password |
+| ------------ | -------- | -------- |
+| Super Admin  | admin    | admin    |
+| Pemilik Toko | herlina  | admin    |
 
 
