@@ -41,7 +41,8 @@ cd Kasir
 ## 🚀 Instalasi Lokal
 | Peran        | Username | Password |
 | ------------ | -------- | -------- |
-| Super Admin  | admin    | admin    |
+| Super Admin  | wahyu    | admin    |
 | Pemilik Toko | herlina  | admin    |
+| Pegawai      | RizkyNur | 123      |
 
 
